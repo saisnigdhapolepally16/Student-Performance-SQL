@@ -1,6 +1,10 @@
+-- Reset (optional but useful for repeat runs)
+DROP DATABASE IF EXISTS StudentPerformance;
+
 CREATE DATABASE StudentPerformance;
 USE StudentPerformance;
 
+-- Tables
 CREATE TABLE Students (
     studentid INT PRIMARY KEY,
     name VARCHAR(50),
@@ -32,6 +36,7 @@ CREATE TABLE Attendance (
     FOREIGN KEY (courseid) REFERENCES Courses(courseid)
 );
 
+-- Data
 INSERT INTO Students VALUES
 (1, 'Amit Sharma', 'CSE', 2),
 (2, 'Priya Singh', 'CSE', 2),
@@ -83,11 +88,13 @@ INSERT INTO Attendance VALUES
 
 -- Queries
 
+-- 1. Average marks per student
 SELECT s.name, AVG(m.marks) AS avgmarks
 FROM Students s
 JOIN Marks m ON s.studentid = m.studentid
 GROUP BY s.studentid, s.name;
 
+-- 2. Top 3 students
 SELECT s.name, AVG(m.marks) AS avgmarks
 FROM Students s
 JOIN Marks m ON s.studentid = m.studentid
@@ -95,23 +102,27 @@ GROUP BY s.studentid, s.name
 ORDER BY avgmarks DESC
 LIMIT 3;
 
+-- 3. Low attendance
 SELECT s.name, AVG(a.attendancepercentage) AS avgattendance
 FROM Students s
 JOIN Attendance a ON s.studentid = a.studentid
 GROUP BY s.studentid, s.name
 HAVING avgattendance < 75;
 
+-- 4. Course-wise average
 SELECT c.coursename, AVG(m.marks) AS avgmarks
 FROM Courses c
 JOIN Marks m ON c.courseid = m.courseid
 GROUP BY c.courseid, c.coursename;
 
+-- 5. Above class average
 SELECT s.name, AVG(m.marks) AS avgmarks
 FROM Students s
 JOIN Marks m ON s.studentid = m.studentid
 GROUP BY s.studentid, s.name
 HAVING avgmarks > (SELECT AVG(marks) FROM Marks);
 
+-- 6. Placement eligibility
 SELECT s.name,
        AVG(m.marks) AS avgmarks,
        AVG(a.attendancepercentage) AS avgattendance
